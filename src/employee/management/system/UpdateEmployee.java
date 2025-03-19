@@ -2,26 +2,22 @@ package employee.management.system;
 
 import javax.swing.*;
 import java.awt.*;
-import com.toedter.calendar.JDateChooser;
-import java.util.*;
 import java.awt.event.*;
+import java.sql.*;
 
-public class AddEmployee extends JFrame implements ActionListener{
+public class UpdateEmployee extends JFrame implements ActionListener{
     
-    Random ran = new Random();
-    int number = ran.nextInt(999999);
+    JTextField tfeducation, tffname, tfsalary, tfaddress, tfphone, tfemail, tfdesg;
+    JLabel lblname, lbldob, labeladhaar, labelempid;
+    JButton update, back;
+    String empid;
     
-    JTextField tfname, tffname, tfsalary, tfaddress, tfphone, tfemail, tfdesg, tfadhaar;
-    JDateChooser dcdob;
-    JComboBox cbeducation;
-    JLabel labelempid;
-    JButton add, back;
-    
-    AddEmployee() {
+    UpdateEmployee(String empid) {
+        this.empid = empid;
         getContentPane().setBackground(Color.WHITE);
         setLayout(null);
         
-        JLabel heading = new JLabel("Add Employee Details");
+        JLabel heading = new JLabel("Update Employee Details");
         heading.setBounds(320, 30, 500, 50);
         heading.setFont(new Font("SAN_SERIF", Font.BOLD, 25));
         add(heading);
@@ -31,9 +27,10 @@ public class AddEmployee extends JFrame implements ActionListener{
         labelname.setFont(new Font("serif", Font.PLAIN, 20));
         add(labelname);
         
-        tfname = new JTextField();
-        tfname.setBounds(200, 150, 150, 30);
-        add(tfname);
+        lblname = new JLabel();
+        lblname.setBounds(200, 150, 150, 30);
+        lblname.setFont(new Font("serif", Font.PLAIN, 20));
+        add(lblname);
         
         JLabel labelfname = new JLabel("Father's Name");
         labelfname.setBounds(400, 150, 150, 30);
@@ -49,9 +46,10 @@ public class AddEmployee extends JFrame implements ActionListener{
         labeldob.setFont(new Font("serif", Font.PLAIN, 20));
         add(labeldob);
         
-        dcdob = new JDateChooser();
-        dcdob.setBounds(200, 200, 150, 30);
-        add(dcdob);
+        lbldob = new JLabel();
+        lbldob.setBounds(200, 200, 150, 30);
+        lbldob.setFont(new Font("serif", Font.PLAIN, 20));
+        add(lbldob);
         
         JLabel labelsalary = new JLabel("Salary");
         labelsalary.setBounds(400, 200, 150, 30);
@@ -94,11 +92,9 @@ public class AddEmployee extends JFrame implements ActionListener{
         labeleducation.setFont(new Font("serif", Font.PLAIN, 20));
         add(labeleducation);
         
-        String courses[] = {"BBA", "BCA", "BA", "B.SC", "B.COM", "BTech", "MBA", "MCA", "MA", "MTech", "M.SC", "PHD"};
-        cbeducation = new JComboBox(courses);
-        cbeducation.setBackground(Color.WHITE);
-        cbeducation.setBounds(600, 300, 150, 30);
-        add(cbeducation);
+        tfeducation = new JTextField();
+        tfeducation.setBounds(600, 300, 150, 30);
+        add(tfeducation);
         
         JLabel lbldesg = new JLabel("Designation");
         lbldesg.setBounds(50, 350, 150, 30);
@@ -114,27 +110,48 @@ public class AddEmployee extends JFrame implements ActionListener{
         lbladhaar.setFont(new Font("serif", Font.PLAIN, 20));
         add(lbladhaar);
         
-        tfadhaar = new JTextField();
-        tfadhaar.setBounds(600, 350, 150, 30);
-        add(tfadhaar);
+        labeladhaar = new JLabel();
+        labeladhaar.setBounds(600, 350, 150, 30);
+        labeladhaar.setFont(new Font("serif", Font.PLAIN, 20));
+        add(labeladhaar);
         
         JLabel lblempid = new JLabel("Employee Id");
         lblempid.setBounds(50, 400, 150, 30);
         lblempid.setFont(new Font("serif", Font.PLAIN, 20));
         add(lblempid);
         
-        labelempid = new JLabel(""+number);
-        labelempid.setBounds(210, 400, 150, 30);
+        labelempid = new JLabel();
+        labelempid.setBounds(200, 400, 150, 30);
         labelempid.setFont(new Font("serif", Font.PLAIN, 20));
-        labelempid.setForeground(Color.BLACK);
         add(labelempid);
         
-        add = new JButton("Add Details");
-        add.setBounds(250, 550, 150, 40);
-        add.setBackground(Color.BLACK);
-        add.setForeground(Color.WHITE);
-        add.addActionListener(this);
-        add(add);
+        try {
+            Conn c = new Conn();
+            String query = "select * from employee where empid = '"+empid+"'";
+            ResultSet rs = c.s.executeQuery(query);
+            while(rs.next()){
+                lblname.setText(rs.getString("name"));
+                tffname.setText(rs.getString("fname"));
+                lbldob.setText(rs.getString("dob"));
+                tfaddress.setText(rs.getString("address"));
+                tfsalary.setText(rs.getString("salary"));
+                tfphone.setText(rs.getString("phone"));
+                tfemail.setText(rs.getString("email"));
+                tfeducation.setText(rs.getString("education"));
+                tfdesg.setText(rs.getString("desg"));
+                labeladhaar.setText(rs.getString("adhaar"));
+                labelempid.setText(rs.getString("empid"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        update = new JButton("Update Details");
+        update.setBounds(250, 550, 150, 40);
+        update.setBackground(Color.BLACK);
+        update.setForeground(Color.WHITE);
+        update.addActionListener(this);
+        add(update);
         
         back = new JButton("Back");
         back.setBounds(450, 550, 150, 40);
@@ -143,7 +160,7 @@ public class AddEmployee extends JFrame implements ActionListener{
         back.addActionListener(this);
         add(back);
         
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/add_employee.jpg"));
+        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/remove.jpg"));
         Image i2 = i1.getImage().getScaledInstance(1100, 700, Image.SCALE_DEFAULT);
         ImageIcon i3 = new ImageIcon(i2);
         JLabel image = new JLabel(i3);
@@ -157,24 +174,20 @@ public class AddEmployee extends JFrame implements ActionListener{
     }
     
     public void actionPerformed(ActionEvent ae){
-        if (ae.getSource() == add) {
-            String name = tfname.getText();
+        if (ae.getSource() == update) {
             String fname = tffname.getText();
-            String dob = ((JTextField) dcdob.getDateEditor().getUiComponent()).getText();
             String salary = tfsalary.getText();
             String address = tfaddress.getText();
             String phone = tfphone.getText();
             String email = tfemail.getText();
-            String education = (String) cbeducation.getSelectedItem();
+            String education = tfeducation.getText();
             String desg = tfdesg.getText();
-            String adhaar = tfadhaar.getText();
-            String empid = labelempid.getText();
             
             try {
                 Conn conn = new Conn();
-                String query = "insert into employee values('"+name+"', '"+fname+"', '"+dob+"', '"+salary+"', '"+address+"', '"+phone+"', '"+email+"', '"+education+"', '"+desg+"', '"+adhaar+"', '"+empid+"')";
-                conn.s.executeUpdate(query); 
-                JOptionPane.showMessageDialog(null, "Details Added Successfully");
+                String query = "update employee set fname = '"+fname+"', salary = '"+salary+"', address = '"+address+"', phone = '"+phone+"', email = '"+email+"', education = '"+education+"', desg = '"+desg+"' where empid = '"+empid+"'";
+                conn.s.executeUpdate(query);
+                JOptionPane.showMessageDialog(null, "Details Updated Successfully");
                 setVisible(false);
                 new Home();
             } catch (Exception e) {
@@ -187,7 +200,7 @@ public class AddEmployee extends JFrame implements ActionListener{
     }
     
     public static void main(String[] args) {
-        new AddEmployee();
+        new UpdateEmployee("");
     }
     
 }
